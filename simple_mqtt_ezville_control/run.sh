@@ -3,6 +3,6 @@
 PY_FILE="xisnd.py"
 
 # start server
-echo "[Info] Start simple_mqtt_ezville_control"
+echo "[Info] Start Xi-Wallpad-MQTT01"
 
 python -u /$PY_FILE
