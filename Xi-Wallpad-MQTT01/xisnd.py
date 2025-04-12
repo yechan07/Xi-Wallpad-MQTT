@@ -3,7 +3,6 @@ import json
 import time
 import asyncio
 import threading
-import socket
 import random
 
 from threading import Thread
@@ -193,10 +192,6 @@ def xisnd_loop(config):
     
     # 통신 모드 설정: mixed, socket, mqtt
     comm_mode = config['mode']
-    
-    # Socket 정보
-    SOC_ADDRESS = config['ew11_server']
-    SOC_PORT = config['ew11_port']
     
     # EW11 혹은 HA 전달 메시지 저장소
     MSG_QUEUE = Queue()
