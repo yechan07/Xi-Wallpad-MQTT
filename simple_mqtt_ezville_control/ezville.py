@@ -975,8 +975,6 @@ def xisnd_loop(config):
         tasklist.append(loop.create_task(state_update_loop()))
         # Home Assistant 명령 실행 loop 실행
         tasklist.append(loop.create_task(command_loop()))
-        # EW11 상태 체크 loop 실행
-        tasklist.append(loop.create_task(ew11_health_loop()))
         
         # ADDON 정상 시작 Flag 설정
         ADDON_STARTED = True
