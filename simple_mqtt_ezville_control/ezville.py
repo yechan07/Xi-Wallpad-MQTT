@@ -3,7 +3,6 @@ import json
 import time
 import asyncio
 import threading
-import telnetlib
 import socket
 import random
 
@@ -45,25 +44,25 @@ RS485_DEVICE = {
 DISCOVERY_DEVICE = {
     'ids': ['xi_wallpad01',],
     'name': 'xi_wallpad01',
-    'mf': 'EzVille',
-    'mdl': 'EzVille Wallpad',
-    'sw': 'ktdo79/addons/ezville_wallpad',
+    'mf': 'Xi S&D',
+    'mdl': 'Xi Wallpad',
+    'sw': 'yechan07/Xi-Wallpad-MQTT/Xi-Wallpad-MQTT01',
 }
 
 # MQTT Discovery를 위한 Payload 정보
 DISCOVERY_PAYLOAD = {
     'light': [ {
         '_intg': 'light',
-        '~': 'ezville/light_{:0>2d}_{:0>2d}',
-        'name': 'ezville_light_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/light_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_light_{:0>2d}_{:0>2d}',
         'opt': True,
         'stat_t': '~/power/state',
         'cmd_t': '~/power/command'
     } ],
     'thermostat': [ {
         '_intg': 'climate',
-        '~': 'ezville/thermostat_{:0>2d}_{:0>2d}',
-        'name': 'ezville_thermostat_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/thermostat_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_thermostat_{:0>2d}_{:0>2d}',
         'mode_cmd_t': '~/power/command',
         'mode_stat_t': '~/power/state',
         'temp_stat_t': '~/setTemp/state',
@@ -76,59 +75,59 @@ DISCOVERY_PAYLOAD = {
     } ],    
     'plug': [ {
         '_intg': 'switch',
-        '~': 'ezville/plug_{:0>2d}_{:0>2d}',
-        'name': 'ezville_plug_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/plug_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_plug_{:0>2d}_{:0>2d}',
         'stat_t': '~/power/state',
         'cmd_t': '~/power/command',
         'icon': 'mdi:leaf'
     },
     {
         '_intg': 'binary_sensor',
-        '~': 'ezville/plug_{:0>2d}_{:0>2d}',
-        'name': 'ezville_plug-automode_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/plug_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_plug-automode_{:0>2d}_{:0>2d}',
         'stat_t': '~/auto/state',
         'icon': 'mdi:leaf'
     },
     {
         '_intg': 'sensor',
-        '~': 'ezville/plug_{:0>2d}_{:0>2d}',
-        'name': 'ezville_plug_{:0>2d}_{:0>2d}_powermeter',
+        '~': 'xisnd/plug_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_plug_{:0>2d}_{:0>2d}_powermeter',
         'stat_t': '~/current/state',
         'unit_of_meas': 'W'
     } ],
     'gasvalve': [ {
         '_intg': 'switch',
-        '~': 'ezville/gasvalve_{:0>2d}_{:0>2d}',
-        'name': 'ezville_gasvalve_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/gasvalve_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_gasvalve_{:0>2d}_{:0>2d}',
         'stat_t': '~/power/state',
         'cmd_t': '~/power/command',
         'icon': 'mdi:valve'
     } ],
     'batch': [ {
         '_intg': 'button',
-        '~': 'ezville/batch_{:0>2d}_{:0>2d}',
-        'name': 'ezville_batch-elevator-up_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/batch_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_batch-elevator-up_{:0>2d}_{:0>2d}',
         'cmd_t': '~/elevator-up/command',
         'icon': 'mdi:elevator-up'
     },
     {
         '_intg': 'button',
-        '~': 'ezville/batch_{:0>2d}_{:0>2d}',
-        'name': 'ezville_batch-elevator-down_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/batch_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_batch-elevator-down_{:0>2d}_{:0>2d}',
         'cmd_t': '~/elevator-down/command',
         'icon': 'mdi:elevator-down'
     },
     {
         '_intg': 'binary_sensor',
-        '~': 'ezville/batch_{:0>2d}_{:0>2d}',
-        'name': 'ezville_batch-groupcontrol_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/batch_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_batch-groupcontrol_{:0>2d}_{:0>2d}',
         'stat_t': '~/group/state',
         'icon': 'mdi:lightbulb-group'
     },
     {
         '_intg': 'binary_sensor',
-        '~': 'ezville/batch_{:0>2d}_{:0>2d}',
-        'name': 'ezville_batch-outing_{:0>2d}_{:0>2d}',
+        '~': 'xisnd/batch_{:0>2d}_{:0>2d}',
+        'name': 'xisnd_batch-outing_{:0>2d}_{:0>2d}',
         'stat_t': '~/outing/state',
         'icon': 'mdi:home-circle'
     } ]
@@ -179,14 +178,14 @@ def checksum(input_hex):
     
 config_dir = '/data'
 
-HA_TOPIC = 'ezville'
+HA_TOPIC = 'xisnd'
 STATE_TOPIC = HA_TOPIC + '/{}/{}/state'
 EW11_TOPIC = 'xi01'
 EW11_SEND_TOPIC = EW11_TOPIC + '/send'
 
 
 # Main Function
-def ezville_loop(config):
+def xisnd_loop(config):
     
     # Log 생성 Flag
     debug = config['DEBUG_LOG']
@@ -812,48 +811,6 @@ def ezville_loop(config):
             log('[SIGNAL] {}회 명령을 재전송하였으나 수행에 실패했습니다.. 다음의 Queue 삭제: {}'.format(str(CMD_RETRY_COUNT),send_data))
             return
         
-                                                
-    # EW11 동작 상태를 체크해서 필요시 리셋 실시
-    async def ew11_health_loop():        
-        while True:
-            timestamp = time.time()
-        
-            # TIMEOUT 시간 동안 새로 받은 EW11 패킷이 없으면 재시작
-            if timestamp - last_received_time > EW11_TIMEOUT:
-                log('[WARNING] {} {} {}초간 신호를 받지 못했습니다. ew11 기기를 재시작합니다.'.format(timestamp, last_received_time, EW11_TIMEOUT))
-                try:
-                    await reset_EW11()
-                    
-                    restart_flag = True
-
-                except:
-                    log('[ERROR] 기기 재시작 오류! 기기 상태를 확인하세요.')
-            else:
-                log('[INFO] EW11 연결 상태 문제 없음')
-            await asyncio.sleep(EW11_TIMEOUT)        
-
-                                                
-    # Telnet 접속하여 EW11 리셋        
-    async def reset_EW11(): 
-        ew11_id = config['ew11_id']
-        ew11_password = config['ew11_password']
-        ew11_server = config['ew11_server']
-
-        ew11 = telnetlib.Telnet(ew11_server)
-
-        ew11.read_until(b'login:')
-        ew11.write(ew11_id.encode('utf-8') + b'\n')
-        ew11.read_until(b'password:')
-        ew11.write(ew11_password.encode('utf-8') + b'\n')
-        ew11.write('Restart'.encode('utf-8') + b'\n')
-        ew11.read_until(b'Restart..')
-        
-        log('[INFO] EW11 리셋 완료')
-        
-        # 리셋 후 60초간 Delay
-        await asyncio.sleep(60)
-        
-    
     def initiate_socket():
         # SOCKET 통신 시작
         log('[INFO] Socket 연결을 시작합니다')
@@ -1045,4 +1002,4 @@ if __name__ == '__main__':
     with open(config_dir + '/options.json') as file:
         CONFIG = json.load(file)
     
-    ezville_loop(CONFIG)
+    xisnd_loop(CONFIG)
