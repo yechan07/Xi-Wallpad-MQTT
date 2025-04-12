@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PY_FILE="ezville.py"
+PY_FILE="xisnd.py"
 
 # start server
 echo "[Info] Start simple_mqtt_ezville_control"
