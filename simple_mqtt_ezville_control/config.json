@@ -1,8 +1,8 @@
 {
   "name": "MQTT 기반 Xi Wallpad MQTT01",
   "version": "0.0.1",
-  "slug": "xi_Wallpad_mqtt01",
-  "url": "https://github.com/yechan07/Xi-Wallpad-MQTT",
+  "slug": "simple_mqtt_ezville_control",
+  "url": "https://github.com/ktdo79/addons",
   "description": "MQTT 통신을 활용한 자이 월패드 컨트롤러",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "map": [
