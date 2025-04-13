@@ -1,1 +1,0 @@
-# Xi Wallpad MQTT
